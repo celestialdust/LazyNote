@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String    // Add this field
+  name          String
+  picture       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  preferences   Json?
+  lastLogin     DateTime?
+  
+  // Relations
+  documents     Document[]
+  stats         UserStats?
+  studySessions StudySession[]
+  questionAttempts QuestionAttempt[]
+}
+
+model Document {
+  id              String    @id @default(uuid())
+  userId          String
+  title           String
+  fileUrl         String
+  fileType        String
+  uploadedAt      DateTime  @default(now())
+  processingStatus String
+  processingError String?
+  pageCount       Int
+  extractedContent Json?
+  
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+  topics          Topic[]
+}
+
+model Topic {
+  id              String    @id @default(uuid())
+  documentId      String
+  name            String
+  description     String
+  createdAt       DateTime  @default(now())
+  confidence      Float
+  vectorEmbedding Json      // Store vector as JSON since Prisma doesn't support vector type directly
+  
+  // Relations
+  document        Document  @relation(fields: [documentId], references: [id])
+  flashcards      Flashcard[]
+  quizzes         Quiz[]
+}
+
+model Flashcard {
+  id              String    @id @default(uuid())
+  topicId         String
+  question        String
+  answer          String
+  difficultyLevel Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  nextReviewAt    DateTime
+  reviewCount     Int       @default(0)
+  easeFactor      Float     @default(2.5)
+  userEdited      Boolean   @default(false)
+  sourcePageNumber Int?
+  
+  // Relations
+  topic           Topic     @relation(fields: [topicId], references: [id])
+}
+
+model Quiz {
+  id              String    @id @default(uuid())
+  topicId         String
+  title           String
+  description     String
+  createdAt       DateTime  @default(now())
+  
+  // Relations
+  topic           Topic     @relation(fields: [topicId], references: [id])
+  questions       Question[]
+}
+
+model Question {
+  id              String    @id @default(uuid())
+  quizId          String
+  questionText    String
+  expectedAnswer  String
+  difficulty      Int
+  createdAt       DateTime  @default(now())
+  sourcePageNumber Int?
+  
+  // Relations
+  quiz            Quiz      @relation(fields: [quizId], references: [id])
+  attempts        QuestionAttempt[]
+}
+
+model QuestionAttempt {
+  id              String    @id @default(uuid())
+  questionId      String
+  userId          String
+  userAnswer      String
+  score           Float
+  feedback        String
+  createdAt       DateTime  @default(now())
+  timeTaken       Int       // in seconds
+  
+  // Relations
+  question        Question  @relation(fields: [questionId], references: [id])
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+model UserStats {
+  id                String    @id @default(uuid())
+  userId           String    @unique
+  totalStudyTime    Int       @default(0) // in minutes
+  flashcardsReviewed Int      @default(0)
+  quizzesCompleted  Int       @default(0)
+  averageScore      Float     @default(0)
+  lastStudyDate     DateTime?
+  streakDays        Int       @default(0)
+  
+  // Relations
+  user             User      @relation(fields: [userId], references: [id])
+}
+
+model StudySession {
+  id              String    @id @default(uuid())
+  userId          String
+  startTime       DateTime
+  endTime         DateTime?
+  sessionType     String
+  itemsStudied    Int
+  topicIds        String[]  // Array of topic UUIDs
+  
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+}
