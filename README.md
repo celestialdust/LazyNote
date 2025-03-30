@@ -1,3 +1,7 @@
+# LazyNote
+
+> **Note:** LazyNote's AI feature is currently in development. Please stay tuned for new updates. I am planning to launch a commercialized version of LazyNote. If you are interested in the idea and want to join our team, please connect with me via xuejiayu@ad.unc.edu
+
 # LazyNote System Design
 
 ## Implementation approach
@@ -506,18 +510,3 @@ sequenceDiagram
     FE->>User: Display performance analytics
 ```
 
-## Anything UNCLEAR
-
-1. **Document Format Limitations**: The PRD specifies PDF support as the MVP requirement, but mentions PPTX and DOCX as P2 features. We should clarify if we need to design the system initially to easily accommodate these formats later.
-
-2. **Offline Functionality**: The PRD mentions offline mode as a P2 feature. It would be helpful to understand the expected scope of offline functionality (e.g., just flashcard review or more comprehensive features).
-
-3. **AI Model Selection**: The requirements specify using OpenAI API but don't indicate which specific models should be used. For cost and performance optimization, we should clarify which models are appropriate for different tasks (e.g., GPT-4 for complex question generation, GPT-3.5 for simpler tasks).
-
-4. **Subscription Model**: The PRD mentions monetization metrics but doesn't specify the subscription tiers or what features would be limited in free vs. paid tiers. This would affect how we design feature access controls.
-
-5. **Mobile Responsiveness vs. Native Apps**: The system design currently focuses on a responsive web application, but the PRD mentions native mobile apps as a future consideration. We should clarify the immediate mobile strategy (PWA vs. purely responsive design).
-
-6. **Data Retention Policy**: The system will store user-uploaded documents and generated content. We should clarify how long this data should be retained, especially for free tier users who might have storage limitations.
-
-7. **Integration Specifications**: The PRD mentions LMS integrations as a P2 feature. More details on the specific systems and integration points would help in designing a more forward-compatible API structure.
